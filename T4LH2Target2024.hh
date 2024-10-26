@@ -38,6 +38,9 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
 
     G4SubtractionSolid* subtraction1;
     G4SubtractionSolid* subtraction2;
+    G4SubtractionSolid* subtractionBox1;
+    G4SubtractionSolid* subtractionBox2;
+    G4SubtractionSolid* subtractionBox3;
     G4UnionSolid* union1;
     G4UnionSolid* union2;
     G4UnionSolid* unionLH2_1;
@@ -46,11 +49,12 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
 
     G4LogicalVolume* CapMother1_log;
     G4LogicalVolume* CapMother2_log;
-    G4LogicalVolume* caseMother_log;
+    G4LogicalVolume* MotherC4_log;
+    G4LogicalVolume* MotherTH1_log;
 
     G4RotationMatrix* rotate1;
     G4RotationMatrix* rotate2;
-    G4RotationMatrix* rotate1Y;
+    G4RotationMatrix* rotate120;    // used for target holders
 
     G4double cavityRadius1;        // bigger vacuum volume radius
     G4double cavityRadius2;        // smaller vacuum volume radius to the left of #1
@@ -68,7 +72,18 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4double cavityLength4;
     G4double cavityLength4_1;
 
-    G4double shift;
+    G4double SideThickness1;      // small O-ring parameters for cylinder 4
+    G4double SideRadiusMin1;
+    G4double SideRadiusMax1;
+
+    G4double SideThickness2;      // big O-ring parameters for cylinder 4
+    G4double SideRadiusMin2;
+    G4double SideRadiusMax2;
+
+    G4double shift;               // distance from tip of target to mylar window
+    G4double dz1;                 // distance between big target holders
+    G4double dz2;                 // distance up to small target holder
+
     G4double targetRadius;        // volume containing H2
     G4double targetLength;
 
