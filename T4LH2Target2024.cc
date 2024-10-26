@@ -33,13 +33,33 @@ T4LH2Target2024::T4LH2Target2024(T4SDetector* lh2)
   cavityThickness4_1 = 2.6 * CLHEP::mm;
   cavityLength4_1 = 60 / 2 * CLHEP::mm;
 
-  SideThickness1 = 11.5 * CLHEP::mm;
+  EndThickness1 = 17. / 2 * CLHEP::mm;
+  EndRadiusMin1 = 318. / 2 * CLHEP::mm;
+  EndRadiusMax1 = 370. / 2 * CLHEP::mm;
+
+  SideThickness1 = 11.5 / 2 * CLHEP::mm;
   SideRadiusMin1 = 80. / 2 * CLHEP::mm;
   SideRadiusMax1 = 139.5 / 2 * CLHEP::mm;
 
-  SideThickness2 = 15.5 * CLHEP::mm;
-  SideRadiusMin2 = 80 / 2 * CLHEP::mm;
+  SideThickness2 = 15.5 / 2 * CLHEP::mm;
+  SideRadiusMin2 = 80. / 2 * CLHEP::mm;
   SideRadiusMax2 = 219.5 / 2 * CLHEP::mm;
+
+  JunctionThickness12_1 = 17. / 2 * CLHEP::mm;
+  JunctionRadiusMin12_1 = 168. / 2 * CLHEP::mm;
+  JunctionRadiusMax12_1 = 370. / 2 * CLHEP::mm;
+
+  JunctionThickness12_2 = 17. / 2 * CLHEP::mm;
+  JunctionRadiusMin12_2 = 318 / 2 * CLHEP::mm;
+  JunctionRadiusMax12_2 = 370 / 2 * CLHEP::mm;
+
+  JunctionThickness23_1 =  15.0 / 2 * CLHEP::mm;
+  JunctionRadiusMin23_1 =  110 / 2 * CLHEP::mm;
+  JunctionRadiusMax23_1 =  239.5 / 2 * CLHEP::mm;
+
+  JunctionThickness23_2 = 14.0 / 2 * CLHEP::mm;;      // junction O-ring parameters between C2 and C3
+  JunctionRadiusMin23_2 = 164.3 / 2 * CLHEP::mm;;
+  JunctionRadiusMax23_2 = 239 / 2 * CLHEP::mm;;
 
   shift = 103. * CLHEP::mm;                              // shift along target axis of outer cavity center wrt target center
   dz1 = 480. * CLHEP::mm; 
@@ -105,30 +125,54 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., cavityLength2 + shift), log.back(), "Cavity1", world_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->darkgray_50);
 
-    tubs.push_back(new G4Tubs("C1Side", cavityRadius2, cavityRadius1 + cavityThickness1, cavityThickness1, 0., 2.*M_PI));      
-    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C1Side_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., -cavityLength1 + cavityLength2 + shift - cavityThickness1), log.back(), "Cavity1Side", world_log, 0, 0, checkOverlap);
-    log.back()->SetVisAttributes(colour->darkgray_50);
+    // junctions between #1 and #2 
+    double posZ_C1j2 = -cavityLength1 + cavityLength2 + shift - JunctionThickness12_2;
+    tubs.push_back(new G4Tubs("C1j2", JunctionRadiusMin12_2, JunctionRadiusMax12_2, JunctionThickness12_2, 0., 2.*M_PI));      
+    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C1j2_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C1j2), log.back(), "Cavity1j2", world_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->orange);
     
+    double posZ_C1j1 = posZ_C1j2 - JunctionThickness12_2 - JunctionThickness12_1;
+    tubs.push_back(new G4Tubs("C1j1", JunctionRadiusMin12_1, JunctionRadiusMax12_1, JunctionThickness12_1, 0., 2.*M_PI));      
+    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C1j1_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C1j1), log.back(), "Cavity1j1", world_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->yellow_50);
+
   // _____________________________________ small stainless-steel cylinder _____________________________________
 
+    double posZ_C2 = -cavityLength1 + shift - cavityThickness1;
     tubs.push_back(new G4Tubs("C2", cavityRadius2, cavityRadius2 + cavityThickness2, cavityLength2, 0., 2.*M_PI));      
     log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C2_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., -cavityLength1 + shift - cavityThickness1), log.back(), "Cavity2", world_log, 0, 0, checkOverlap);
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C2), log.back(), "Cavity2", world_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->darkgray_50);
+
+    // junctions between #2 and #3
+    double posZ_C2j2 = posZ_C2 - cavityLength2 - JunctionThickness23_2;
+    tubs.push_back(new G4Tubs("C3j2", JunctionRadiusMin23_2, JunctionRadiusMax23_2, JunctionThickness23_2, 0., 2.*M_PI));      
+    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C2j2_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C2j2 ), log.back(), "Cavity3j2", world_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->darkgreen);
+
+    double posZ_C2j1 = posZ_C2j2 - JunctionThickness23_2 - JunctionThickness23_1;
+    tubs.push_back(new G4Tubs("C3j1", JunctionRadiusMin23_1, JunctionRadiusMax23_1, JunctionThickness23_1, 0., 2.*M_PI));      
+    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C2j1_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C2j1), log.back(), "Cavity3j1", world_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->lightgreen);
 
   // _____________________________________ #3 stainless-steel cylinder _____________________________________
 
+    double posZ_C3 = -cavityLength1 + shift - cavityThickness1 - cavityLength2 - 2*JunctionThickness23_1 - 2*JunctionThickness23_2 - cavityLength3;
     tubs.push_back(new G4Tubs("C3", cavityRadius3, cavityRadius3 + cavityThickness3, cavityLength3, 0., 2.*M_PI));      
     log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C3_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., -cavityLength1 + shift - cavityThickness1 - cavityLength2 - cavityLength3), log.back(), "Cavity3", world_log, 0, 0, checkOverlap);
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C3), log.back(), "Cavity3", world_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->darkgray_50);
 
   // _______________________________________ mother log volumes for cylinder 4 _______________________________________
    
+    double posZ_motherC4 = -cavityLength1 + shift - cavityLength2 - cavityThickness1 - 2*cavityLength3 - 2*JunctionThickness23_1 - 2*JunctionThickness23_2 - cavityLength4;
     tubs.push_back(new G4Tubs("motherC4_vol", 0., 2*cavityRadius4, 1.5*cavityLength4, 0., 2.*M_PI));
     log.push_back(new G4LogicalVolume(tubs.back(), materials->vacuum_noOptical, "motherC4_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0.,0.,-cavityLength1 + shift - cavityLength2 - cavityThickness1 - 2*cavityLength3 - cavityLength4), log.back(), "MotherC4", world_log, 0, 0, checkOverlap);
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0.,0.,posZ_motherC4), log.back(), "MotherC4", world_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->invisible);
     MotherC4_log = log.back();
 
@@ -158,26 +202,40 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
     // O-rings at the beginning of C4
 
     tubs.push_back(new G4Tubs("C4_side3", cavityRadius4, SideRadiusMax2, SideThickness2, 0., 2.*M_PI));      
-    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C4Side1_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., -cavityLength4 - SideThickness2), log.back(), "Cavity4Side1", MotherC4_log, 0, 0, checkOverlap);
-    log.back()->SetVisAttributes(colour->darkgray_50);
+    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C4Side3_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., -cavityLength4 - SideThickness2), log.back(), "Cavity4Side3", MotherC4_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->cyan);
 
     tubs.push_back(new G4Tubs("C4_side2", SideRadiusMin2, SideRadiusMax2, SideThickness2, 0., 2.*M_PI));      
-    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C4Side1_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., -cavityLength4 - 3*SideThickness2), log.back(), "Cavity4Side1", MotherC4_log, 0, 0, checkOverlap);
-    log.back()->SetVisAttributes(colour->darkgray_50);
+    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C4Side2_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., -cavityLength4 - 3*SideThickness2), log.back(), "Cavity4Side2", MotherC4_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->darkcyan);
     
     tubs.push_back(new G4Tubs("C4_side1", SideRadiusMin1, SideRadiusMax1, SideThickness1, 0., 2.*M_PI));      
     log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C4Side1_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., -cavityLength4 - 4*SideThickness2 - SideThickness1), log.back(), "Cavity4Side1", MotherC4_log, 0, 0, checkOverlap);
-    log.back()->SetVisAttributes(colour->darkgray_50);
+    log.back()->SetVisAttributes(colour->orange);
 
   // ________________________________________ mylar window _________________________________________
 
+    double posZ_MW = targetLength + shift + 2*EndThickness1 + mylarWindowThick;
     tubs.push_back(new G4Tubs("mylarWin", 0., mylarWindowRadius, mylarWindowThick, 0., 2.*M_PI));
     log.push_back(new G4LogicalVolume(tubs.back(), materials->mylar, "MW_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., targetLength + shift - mylarWindowThick), log.back(), "MylarWindow", world_log, 0, 0, checkOverlap);
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_MW), log.back(), "MylarWindow", world_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->blue);
+
+    // O-rings for mylar window
+    double posZ_MWj1 = targetLength + shift + EndThickness1;
+    tubs.push_back(new G4Tubs("mylarWin_j1", EndRadiusMin1, EndRadiusMax1, EndThickness1, 0., 2.*M_PI));
+    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "MWj1_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_MWj1), log.back(), "MylarWindow_j1", world_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->green);
+
+    double posZ_MWj2 = posZ_MW + mylarWindowThick + EndThickness1;
+    tubs.push_back(new G4Tubs("mylarWin_j2", EndRadiusMin1, EndRadiusMax1, EndThickness1, 0., 2.*M_PI));
+    log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "MWj2_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_MWj2), log.back(), "MylarWindow_j2", world_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->magenta);
 
   // _______________________________________ mother log volumes for target caps _______________________________________
     

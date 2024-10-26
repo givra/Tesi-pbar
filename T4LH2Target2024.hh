@@ -72,6 +72,10 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4double cavityLength4;
     G4double cavityLength4_1;
 
+    G4double EndThickness1;      // O-ring parameters around mylar window at the end of C1
+    G4double EndRadiusMin1;
+    G4double EndRadiusMax1;
+
     G4double SideThickness1;      // small O-ring parameters for cylinder 4
     G4double SideRadiusMin1;
     G4double SideRadiusMax1;
@@ -79,6 +83,23 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4double SideThickness2;      // big O-ring parameters for cylinder 4
     G4double SideRadiusMin2;
     G4double SideRadiusMax2;
+
+    G4double JunctionThickness12_1;      // junction O-ring parameters between C1 and C2
+    G4double JunctionRadiusMin12_1;
+    G4double JunctionRadiusMax12_1;
+
+    G4double JunctionThickness12_2;     
+    G4double JunctionRadiusMin12_2;
+    G4double JunctionRadiusMax12_2;
+
+    G4double JunctionThickness23_1;      // junction O-ring parameters between C2 and C3
+    G4double JunctionRadiusMin23_1;
+    G4double JunctionRadiusMax23_1;
+
+    G4double JunctionThickness23_2;      // junction O-ring parameters between C2 and C3
+    G4double JunctionRadiusMin23_2;
+    G4double JunctionRadiusMax23_2;
+
 
     G4double shift;               // distance from tip of target to mylar window
     G4double dz1;                 // distance between big target holders
