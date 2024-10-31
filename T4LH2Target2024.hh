@@ -9,6 +9,7 @@
 #include "G4SubtractionSolid.hh"
 #include <G4UnionSolid.hh>
 #include "G4IntersectionSolid.hh"
+#include "G4Cons.hh"
 
 class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
 {
@@ -34,10 +35,15 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     vector<G4Tubs*> tubs;
     vector<G4Sphere*> sphere;
     vector<G4GenericTrap*> trap;
+    vector<G4Cons*> cons;
     vector<G4LogicalVolume*> log;
 
-    G4SubtractionSolid* subtraction1;
-    G4SubtractionSolid* subtraction2;
+    G4SubtractionSolid* subtractionEdge;        // used for target holders
+    G4SubtractionSolid* subtractionHole;
+    G4SubtractionSolid* subtractionC4;
+    G4SubtractionSolid* subtractionTriangle1;
+    G4SubtractionSolid* subtractionTriangle2;
+    G4SubtractionSolid* subtractionTriangle3;
     G4SubtractionSolid* subtractionBox1;
     G4SubtractionSolid* subtractionBox2;
     G4SubtractionSolid* subtractionBox3;
@@ -55,6 +61,7 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4RotationMatrix* rotate1;
     G4RotationMatrix* rotate2;
     G4RotationMatrix* rotate120;    // used for target holders
+    G4RotationMatrix* rotate60;    // used for target holders
 
     G4double cavityRadius1;        // bigger vacuum volume radius
     G4double cavityRadius2;        // smaller vacuum volume radius to the left of #1
@@ -72,31 +79,39 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4double cavityLength4;
     G4double cavityLength4_1;
 
-    G4double EndThickness1;      // O-ring parameters around mylar window at the end of C1
+    G4double EndLength1;      // O-ring parameters around mylar window at the end of C1
     G4double EndRadiusMin1;
     G4double EndRadiusMax1;
 
-    G4double SideThickness1;      // small O-ring parameters for cylinder 4
+    G4double EndLength_O;        // junction O-ring parameters between "End_1" and "End_2"
+    G4double EndRadiusMin_O;
+    G4double EndRadiusMax_O;
+
+    G4double SideLength1;      // small O-ring parameters for cylinder 4
     G4double SideRadiusMin1;
     G4double SideRadiusMax1;
 
-    G4double SideThickness2;      // big O-ring parameters for cylinder 4
+    G4double SideLength2;      // big O-ring parameters for cylinder 4
     G4double SideRadiusMin2;
     G4double SideRadiusMax2;
 
-    G4double JunctionThickness12_1;      // junction O-ring parameters between C1 and C2
+    G4double JunctionLength12_1;      // junction O-ring parameters between C1 and C2
     G4double JunctionRadiusMin12_1;
     G4double JunctionRadiusMax12_1;
 
-    G4double JunctionThickness12_2;     
+    G4double JunctionLength12_O;        // junction O-ring parameters between "Junction12_1" and "Junction12_2"
+    G4double JunctionRadiusMin12_O;
+    G4double JunctionRadiusMax12_O;
+
+    G4double JunctionLength12_2;     
     G4double JunctionRadiusMin12_2;
     G4double JunctionRadiusMax12_2;
 
-    G4double JunctionThickness23_1;      // junction O-ring parameters between C2 and C3
+    G4double JunctionLength23_1;      // junction O-ring parameters between C2 and C3
     G4double JunctionRadiusMin23_1;
     G4double JunctionRadiusMax23_1;
 
-    G4double JunctionThickness23_2;      // junction O-ring parameters between C2 and C3
+    G4double JunctionLength23_2;      // junction O-ring parameters between C2 and C3
     G4double JunctionRadiusMin23_2;
     G4double JunctionRadiusMax23_2;
 
@@ -131,12 +146,12 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4double mylarWindowRadius;           
     G4double mylarWindowThick;           
     G4double caseThickness1;    // aluminium case thickness
-    G4double caseThickness1_1;    // aluminium case thickness in corrispondence of holder
+    G4double caseThickness1_1;    // aluminium case thickness in corrispondence of triangular-ish holder
     G4double caseThickness2;    // thickness of cylindrical end
     
     /* the target case is subdivided into different cylindrical 
        sections in order to better implement the target holders.
-       The first measure referres to the piece closest to the mylar window
+       The first measurement referres to the piece closest to the mylar window
        ________    _________    ________
                \--/         \--/        |  <-- mylar window
            3    1_1    2     1_1     1
@@ -153,6 +168,8 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4double trapThickness;       // thickness of target holder
     G4double trapDx;              // half of small edge of target holder
     G4double trapSide;            // side length of target holder
+    G4double trapHeight;
+    G4double HoleD;               // referring to hole in target holder; distance external side of rectangular hole - circular hole
     G4double xBox;                // sides for rectangular holes in target holder
     G4double yBox;
     
