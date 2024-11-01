@@ -49,6 +49,7 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4SubtractionSolid* subtractionBox3;
     G4UnionSolid* union1;
     G4UnionSolid* union2;
+    G4UnionSolid* unionC4;
     G4UnionSolid* unionLH2_1;
     G4UnionSolid* unionLH2_2;
     G4UnionSolid* unionCaseCap;
@@ -145,9 +146,11 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     
     G4double mylarWindowRadius;           
     G4double mylarWindowThick;           
-    G4double caseThickness1;    // aluminium case thickness
-    G4double caseThickness1_1;    // aluminium case thickness in corrispondence of triangular-ish holder
-    G4double caseThickness2;    // thickness of cylindrical end
+    G4double caseThickness;    // aluminium case thickness
+    G4double caseLength1;
+    G4double caseLength2;
+    //G4double caseThickness1_1;    // aluminium case thickness in corrispondence of triangular-ish holder
+    //G4double caseThickness2;    // thickness of cylindrical end
     
     /* the target case is subdivided into different cylindrical 
        sections in order to better implement the target holders.
@@ -157,13 +160,13 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
            3    1_1    2     1_1     1
     */
         
-    G4double caseCone;           // height of cone   
-    G4double caseLength1_1;     // small segment for Target Holder
-    G4double caseLength1;
-    G4double caseLength2;
-    G4double caseLength3;
-    G4double caseLength4;
-    G4double caseLength5;
+    //G4double caseCone;           // height of cone   
+    //G4double caseLength1_1;     // small segment for Target Holder
+    //G4double caseLength1;
+    //G4double caseLength2;
+    //G4double caseLength3;
+    //G4double caseLength4;
+    //G4double caseLength5;
     
     G4double trapThickness;       // thickness of target holder
     G4double trapDx;              // half of small edge of target holder
