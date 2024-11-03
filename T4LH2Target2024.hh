@@ -23,11 +23,18 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     
     void setCavityRadius1(double r1) {cavityRadius1 = r1;}        // referring to the biggest cavity
     void setCavityRadius2(double r2) {cavityRadius2 = r2;}        // at the left of #1
+    //void setCavityRadius2(double r3) {cavityRadius2 = r3;}        // at the left of #2
+    //void setCavityRadius2(double r4) {cavityRadius2 = r4;}        // at the left of #3
     void setCavityThickness1(double d1) {cavityThickness1 = d1;}
     void setCavityThickness2(double d2) {cavityThickness2 = d2;}
-    void setTargetRadius(double r) {targetRadius = r;}
+    //void setCavityThickness2(double d3) {cavityThickness2 = d3;}
+    //void setCavityThickness2(double d4) {cavityThickness2 = d4;}
+    //void setTargetRadius(double r) {targetRadius = r;}
     
-    // G4LogicalVolume* getVacuumLog(void) {return vacuum_log;}
+    //G4LogicalVolume* getCapMother1_Log(void) {return CapMother1_log;}
+    //G4LogicalVolume* getCapMother2_Log(void) {return CapMother2_log;}
+    //G4LogicalVolume* getMotherTH1_log(void) {return MotherTH1_log;}
+
 
   private:
     G4double yearSetup;
@@ -66,9 +73,9 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
 
     G4double cavityRadius1;        // bigger vacuum volume radius
     G4double cavityRadius2;        // smaller vacuum volume radius to the left of #1
-    G4double cavityRadius3;        // to the eft of #2
+    G4double cavityRadius3;        // to the left of #2
     G4double cavityRadius4;        // to the left of #3
-    G4double cavityRadius4_1;        // upwards tube in cavity #4
+    G4double cavityRadius4_1;      // upwards tube in cavity #4
     G4double cavityThickness1;
     G4double cavityThickness2;
     G4double cavityThickness3;
@@ -117,9 +124,10 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4double JunctionRadiusMax23_2;
 
 
-    G4double shift;               // distance from tip of target to mylar window
-    G4double dz1;                 // distance between big target holders
-    G4double dz2;                 // distance up to small target holder
+    G4double shift1;               // distance from tip of target to Junction23_2
+    G4double shift2;               // distance from tip of target to mylar window
+    G4double dz1;                  // distance between big target holders
+    G4double dz2;                  // distance up to small target holder
 
     G4double targetRadius;        // volume containing H2
     G4double targetLength;
@@ -151,14 +159,6 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     G4double caseLength2;
     //G4double caseThickness1_1;    // aluminium case thickness in corrispondence of triangular-ish holder
     //G4double caseThickness2;    // thickness of cylindrical end
-    
-    /* the target case is subdivided into different cylindrical 
-       sections in order to better implement the target holders.
-       The first measurement referres to the piece closest to the mylar window
-       ________    _________    ________
-               \--/         \--/        |  <-- mylar window
-           3    1_1    2     1_1     1
-    */
         
     //G4double caseCone;           // height of cone   
     //G4double caseLength1_1;     // small segment for Target Holder

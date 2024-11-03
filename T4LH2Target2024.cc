@@ -69,11 +69,12 @@ T4LH2Target2024::T4LH2Target2024(T4SDetector* lh2)
   JunctionRadiusMin23_2 = 164.3 / 2 * CLHEP::mm;
   JunctionRadiusMax23_2 = 239 / 2 * CLHEP::mm;
 
-  shift = 103. * CLHEP::mm;                              // shift along target axis of outer cavity center wrt target center
+  shift1 = 29. * CLHEP::mm;
+  shift2 = 103. * CLHEP::mm;                              
   dz1 = 480. * CLHEP::mm; 
   dz2 = 204. * CLHEP::mm; 
 
-  targetRadius =  39.8 / 2 * CLHEP::mm;                    // o 40mm????? lh2 volume
+  targetRadius =  39.8 / 2 * CLHEP::mm;                   
   targetLength = 1400 / 2 * CLHEP::mm;                   // already contains in its definition the 2 radii
   mylarRadius =  40 / 2 * CLHEP::mm;                     // for mylar semi-spheres end caps
   mylarThickness =  0.125 * CLHEP::mm;                   // 125 um
@@ -130,15 +131,16 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
 {
 
   // _____________________________________ biggest stainless-steel cylinder #1 _____________________________________
-/*
+
+    double posZ_C1 = shift1 + shift2 + JunctionLength12_1 + 2*JunctionLength12_O;
     tubs.push_back(new G4Tubs("C1", cavityRadius1, cavityRadius1 + cavityThickness1, cavityLength1, 0., 2.*M_PI));
     // logical volume
     log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C1_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., cavityLength2 + shift), log.back(), "Cavity1", world_log, 0, 0, checkOverlap);
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0.,posZ_C1), log.back(), "Cavity1", world_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->darkgray_50);
 
     // junctions between C1 and C2 
-    double posZ_C1j2 = -cavityLength1 + cavityLength2 + shift;
+    double posZ_C1j2 = posZ_C1 - cavityLength1;
     tubs.push_back(new G4Tubs("C1j2", JunctionRadiusMin12_2, JunctionRadiusMax12_2, JunctionLength12_2, 0., 2.*M_PI));      
     log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C1j2_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C1j2), log.back(), "Cavity1j2", world_log, 0, 0, checkOverlap);
@@ -158,7 +160,7 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
 
   // _____________________________________ small stainless-steel cylinder #2 _____________________________________
 
-    double posZ_C2 = posZ_O12 - JunctionLength12_1 - JunctionLength12_O - cavityLength2;
+    double posZ_C2 = posZ_C1j1 - cavityLength2;
     tubs.push_back(new G4Tubs("C2", cavityRadius2, cavityRadius2 + cavityThickness2, cavityLength2, 0., 2.*M_PI));      
     log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C2_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C2), log.back(), "Cavity2", world_log, 0, 0, checkOverlap);
@@ -179,7 +181,7 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
 
   // _____________________________________ #3 stainless-steel cylinder _____________________________________
 
-    double posZ_C3 = -cavityLength1 + shift - cavityThickness1 - cavityLength2 - 2*JunctionLength23_1 - 2*JunctionLength23_2 - cavityLength3;
+    double posZ_C3 = posZ_C2j1 - JunctionLength23_1 - cavityLength3;
     tubs.push_back(new G4Tubs("C3", cavityRadius3, cavityRadius3 + cavityThickness3, cavityLength3, 0., 2.*M_PI));      
     log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "C3_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_C3), log.back(), "Cavity3", world_log, 0, 0, checkOverlap);
@@ -187,7 +189,7 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
 
   // _______________________________________ mother log volumes for cylinder 4 _______________________________________
    
-    double posZ_motherC4 = -cavityLength1 + shift - cavityLength2 - cavityThickness1 - 2*cavityLength3 - 2*JunctionLength23_1 - 2*JunctionLength23_2 - cavityLength4;
+    double posZ_motherC4 = posZ_C3 - cavityLength3 - cavityLength4;
     tubs.push_back(new G4Tubs("motherC4_vol", 0., 2*cavityRadius4, 1.5*cavityLength4, 0., 2.*M_PI));
     log.push_back(new G4LogicalVolume(tubs.back(), materials->vacuum_noOptical, "motherC4_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0.,0.,posZ_motherC4), log.back(), "MotherC4", world_log, 0, 0, checkOverlap);
@@ -236,14 +238,14 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
 
   // ________________________________________ mylar window _________________________________________
 
-    double posZ_MW = targetLength + shift + EndLength1 + 2*EndLength_O + mylarWindowThick;
+    double posZ_MW = targetLength + shift2 + EndLength1 + 2*EndLength_O + mylarWindowThick;
     tubs.push_back(new G4Tubs("mylarWin", 0., mylarWindowRadius, mylarWindowThick, 0., 2.*M_PI));
     log.push_back(new G4LogicalVolume(tubs.back(), materials->mylar, "MW_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_MW), log.back(), "MylarWindow", world_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->blue);
 
     // O-rings for mylar window
-    double posZ_MWj1 = targetLength + shift;
+    double posZ_MWj1 = targetLength + shift2;
     tubs.push_back(new G4Tubs("mylarWin_j1", EndRadiusMin1, EndRadiusMax1, EndLength1, 0., 2.*M_PI));
     log.push_back(new G4LogicalVolume(tubs.back(), materials->Al2O3, "MWj1_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_MWj1), log.back(), "MylarWindow_j1", world_log, 0, 0, checkOverlap);
@@ -260,7 +262,7 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
     log.push_back(new G4LogicalVolume(tubs.back(), materials->Al2O3, "MWj2_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., posZ_MWj2), log.back(), "MylarWindow_j2", world_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->magenta);
-*/
+
   // _______________________________________ mother log volumes for target caps and insulation _______________________________________
     
     // #1 referrs to the end of target, closest to mylar window
@@ -278,7 +280,7 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
     CapMother2_log = log.back();
 
   // ___________________________________________ H2 target ___________________________________________
-/*
+
    // cylindrical part
     tubs.push_back(new G4Tubs("target_H2", 0., targetRadius, targetLength - 2*targetRadius, 0., 2.*M_PI));
     //log.push_back(new G4LogicalVolume(tubs.back(), materials->lh2, "targetH2_log"));
@@ -355,7 +357,7 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
     log.push_back(new G4LogicalVolume(tubs.back(), materials->stainlessSteel, "steelCyl_log"));
     new G4PVPlacement(0, positionVector + G4ThreeVector(0., 0., +steelLength), log.back(), "steelCyl", CapMother2_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->darkgray);
-*/
+
 
   // ________________________________________ target insulation case __________________________________________
 
@@ -372,10 +374,10 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
     //new G4PVPlacement(0, positionVector - G4ThreeVector(0.,0., targetRadius + mylarThickness + caseThickness), log.back(), "targetCaseDisc_1", CapMother2_log, 0, 0, checkOverlap);
     //log.back()->SetVisAttributes(colour->silver);
 
-    unionCaseCap = new G4UnionSolid("disc+cylinder", tubs.back(), cylinder);
-    log.push_back(new G4LogicalVolume(unionCaseCap, materials->AlMylar, "unionCaseCap_log"));        
-    new G4PVPlacement(0, positionVector - G4ThreeVector(0.,0.,targetLength + mylarThickness - caseThickness), log.back(), "caseCap", CapMother2_log, 0, 0, checkOverlap);
-    log.back()->SetVisAttributes(colour->green);
+   // unionCaseCap = new G4UnionSolid("disc+cylinder", tubs.back(), cylinder);
+   // log.push_back(new G4LogicalVolume(unionCaseCap, materials->AlMylar, "unionCaseCap_log"));        
+   // new G4PVPlacement(0, positionVector - G4ThreeVector(0.,0.,targetLength + mylarThickness - caseThickness), log.back(), "caseCap", CapMother2_log, 0, 0, checkOverlap);
+   // log.back()->SetVisAttributes(colour->green);
 
    // ************************************* first cap of case at beginning of target ******************************
    // G4Tubs* cylinder = new G4Tubs("case_BegCap1", targetRadius + mylarThickness, targetRadius + mylarThickness + caseThickness, caseLength1, 0., 2.*M_PI);
@@ -400,6 +402,8 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
    // new G4PVPlacement(0, positionVector + G4ThreeVector(0.,0.,targetLength + mylarThickness + caseThickness), log.back(), "caseCap1", CapMother1_log, 0, 0, checkOverlap);
    // log.back()->SetVisAttributes(colour->silver);
 
+
+  // ************************************* to be deleted probably ***************************************
     // 1st cone
 /*    double posZ_cone1 = targetRadius + mylarThickness - 2*caseLength1 - caseCone;
     cons.push_back(new G4Cons("cone1",targetRadius + kaptonThickness, targetRadius + kaptonThickness + caseThickness1_1, targetRadius + kaptonThickness,targetRadius + kaptonThickness + caseThickness1, caseCone, 0., 2*M_PI));
@@ -467,28 +471,28 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
     new G4PVPlacement(0, positionVector + G4ThreeVector(0.,0.,posZ_cone6 - caseLength4 - caseCone), log.back(), "targetCaseC4", CapMother1_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->silver);
 */
-  // __________________________________________ mother vol for target holders (TH) ______________________________________
+  // __________________________________________ mother vol for target holder1 (TH) ______________________________________
 
-    double posZ = -cavityLength1 + shift - cavityThickness1 - cavityLength2 + dz2 + 2*dz1 + 5*trapThickness;       
+    double posZ1 = posZ_C2j2 - JunctionLength12_2 + dz2 + 2*dz1 + 5*trapThickness;       
     box.push_back(new G4Box("motherTH1_vol", 2*cavityRadius1, 2*cavityRadius1, trapThickness));
     log.push_back(new G4LogicalVolume(box.back(), materials->vacuum_noOptical, "motherTH1_log"));
-    new G4PVPlacement(0, positionVector + G4ThreeVector(0.,0.,posZ), log.back(), "MotherTH1", CapMother1_log, 0, 0, checkOverlap);
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0.,0.,posZ1), log.back(), "MotherTH1", CapMother1_log, 0, 0, checkOverlap);
     log.back()->SetVisAttributes(colour->invisible);
     MotherTH1_log = log.back();
 
-  // ____________________________ triangular-ish target holders ____________________________
+  // ____________________________ triangular-ish target holder 1 ____________________________
 
   double trapDh = TMath::Tan(60 * CLHEP::degree)*trapDx;
   double trapDL = trapDx / TMath::Sin(30 * CLHEP::degree);
   double trapL = trapSide + 2*trapDL;
 
-  // !!the center of the triangle doesn't coincide with trapHeight/2
+  // the center of the triangle doesn't coincide with trapHeight/2
   double trap_h1 = trapL / (2*TMath::Cos(30 * CLHEP::degree));       // longest segment
   double trap_h2 = trapHeight - trap_h1;                             // shortest segment
   double trap_l1 = trap_h1 / (2*TMath::Cos(30 * CLHEP::degree));
   double trap_l2 = trapL - trap_l1;
 
-  // vertices coordinates must be given in anti-clockwise order, from bottom to top.
+  // vertices coordinates must be given in anti-clockwise order, from bottom to top along z axis.
 
     double X1 = 0.;
     double Y1 = -trap_h1;
@@ -496,7 +500,48 @@ void T4LH2Target2024::construct(G4LogicalVolume* world_log)
     double Y2 = trap_h2;
 
   // G4Trapezoid must have 8 vertices so the 1st and 4th coincide
-   vector<G4TwoVector> vertices = {{X1,Y1},{-X2,Y2},{X2,Y2},{X1,Y1},{X1,Y1},{-X2,Y2},{X2,Y2},{X1,Y1}};
+  vector<G4TwoVector> vertices = {{X1,Y1},{-X2,Y2},{X2,Y2},{X1,Y1},{X1,Y1},{-X2,Y2},{X2,Y2},{X1,Y1}};
+
+  trap.push_back(new G4GenericTrap("targetHolder1", trapThickness, vertices));
+  
+  // ring to remove the edges
+  // subtraction volume cannot be the same thickness as the main volume otherwise the result is undefined
+  tubs.push_back(new G4Tubs("targetHolderEdge", cavityRadius1, cavityRadius1 + trapDh, 2*trapThickness, 0., 2*M_PI));
+  subtractionEdge = new G4SubtractionSolid("targetHolder1-targetHolderEdge",trap.back(),tubs.back(),0,G4ThreeVector(0.,0.,0.));         
+  // target holder hole
+  tubs.push_back(new G4Tubs("targetHolderHole", 0., kaptonRadius + kaptonThickness + caseThickness, 2*trapThickness, 0., 2*M_PI));
+  subtractionHole = new G4SubtractionSolid("subtractionEdge-targetHolderHole",subtractionEdge,tubs.back(),0,G4ThreeVector(0.,0.,0.));         
+ 
+  // first rectangular hole
+  double dR = HoleD - 2*(kaptonRadius + kaptonThickness + caseThickness) - yBox;
+  G4ThreeVector posBox1(0., kaptonRadius + kaptonThickness + caseThickness + dR,0.);
+  box.push_back(new G4Box("box1", xBox, yBox, 2*trapThickness));
+  subtractionBox1 = new G4SubtractionSolid("subtractionHole-box1", subtractionHole, box.back(),0,-posBox1);
+
+  // second  and third rectangular hole 
+  double posX_box = (kaptonRadius + kaptonThickness + caseThickness + dR) * TMath::Cos(30 * CLHEP::degree);
+  double posY_box = (kaptonRadius + kaptonThickness + caseThickness + dR) * TMath::Sin(30 * CLHEP::degree);
+  G4ThreeVector posBox2(-posX_box,posY_box,0.);
+  G4ThreeVector posBox3(posX_box,posY_box,0.);
+
+  box.push_back(new G4Box("box2", xBox, yBox, 2*trapThickness));
+  subtractionBox2 = new G4SubtractionSolid("subtractionBox1-box2", subtractionBox1, box.back(),rotate120,posBox2);
+  box.push_back(new G4Box("box3", xBox, yBox, 2*trapThickness));
+  subtractionBox3 = new G4SubtractionSolid("subtractionBox2-box3", subtractionBox2, box.back(),rotate60,posBox3);
+  log.push_back(new G4LogicalVolume(subtractionBox3, materials->rohacell, "subtractionBox3_log"));
+  new G4PVPlacement(0, positionVector, log.back(), "SubtractionBox3", MotherTH1_log, 0, 0, checkOverlap);
+  log.back()->SetVisAttributes(colour->magenta);
+
+  // __________________________________________ mother vol for target holder2 (TH) ______________________________________
+
+    double posZ2 = posZ_C2j2 - JunctionLength12_2 + dz2 + dz1 + 3*trapThickness;       
+    box.push_back(new G4Box("motherTH2_vol", 2*cavityRadius1, 2*cavityRadius1, trapThickness));
+    log.push_back(new G4LogicalVolume(box.back(), materials->vacuum_noOptical, "motherTH2_log"));
+    new G4PVPlacement(0, positionVector + G4ThreeVector(0.,0.,posZ), log.back(), "MotherTH2", CapMother1_log, 0, 0, checkOverlap);
+    log.back()->SetVisAttributes(colour->invisible);
+    MotherTH2_log = log.back();
+
+  // ____________________________ triangular-ish target holder 2 ____________________________
 
   trap.push_back(new G4GenericTrap("targetHolder1", trapThickness, vertices));
   
@@ -537,9 +582,9 @@ void T4LH2Target2024::getTargetDetDat(std::vector<T4STargetInformation> &targetI
   target.name = "targetH2_2024";
   target.rotMatrix = TGEANT::ROT_XtoZ;
   target.sh = 5;
-  // target.xSize = targetRadius;
-  // target.ySize = targetLength * 2.;
-  target.zSize = 0;
+  target.xSize = targetRadius;
+  target.ySize = targetRadius;
+  target.zSize = targetLength;
   target.xCen = positionVector.getX();
   target.yCen = positionVector.getY();
   target.zCen = positionVector.getZ();
@@ -569,7 +614,4 @@ T4LH2Target2024::~T4LH2Target2024(void)
     delete trap.at(i);
   trap.clear();
 
-  for (unsigned int i = 0; i < cons.size();i++)
-    delete cons.at(i);
-  cons.clear();
 }
