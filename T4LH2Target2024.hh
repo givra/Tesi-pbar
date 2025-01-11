@@ -32,7 +32,7 @@ class T4LH2Target2024 : public T4BaseDetector, public T4TargetBackend
     vector<G4Box*> box;
     vector<G4Tubs*> tubs;
     vector<G4Sphere*> sphere;
-    vector<G4GenericTrap*> trap;
+    vector<G4Trap*> trap;
     vector<G4Cons*> cons;
     vector<G4LogicalVolume*> log;
 
