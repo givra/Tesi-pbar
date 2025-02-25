@@ -18,6 +18,7 @@
 #include "TMath.h"
 #include "PaMCvertex.h"
 #include "PaMCtrack.h"
+#include "TTimeStamp.h"
 
 // RD 2023 
 // /eos/experiment/amber/pbar/common/data23/RD/productions/W01t0.8rich1.6/mDST/mDST-304***.root.***
@@ -57,6 +58,13 @@ void UserEvent110(PaEvent& e){
     TTimeStamp* time_TTH4 = nullptr;
     TTimeStamp* time_PV8 = nullptr;
     TTimeStamp* time_PV8piezo = nullptr;
+
+    int NeventFM1;
+    int NeventTPO4;
+    int NeventFM60;
+    int NeventTTH4;
+    int NeventPV8;
+    int NeventPV8_piezo;
 
     // time of the event
     static double time_event;
@@ -115,6 +123,12 @@ void UserEvent110(PaEvent& e){
     TTree *treePV8_piezo = (TTree*)hfilePV8_piezo.Get("Still pressure piezo (PV8 piezo)");
     treePV8_piezo->SetBranchAddress("timestamp", &time_PV8piezo);
     treePV8_piezo->SetBranchAddress("fValue",&PV8piezo);
+
+    NeventFM1 = treeFM1->GetEntries();
+    for(int ev=0; ev<NeventFM1; ev++){
+            treeFM1->GetEvent(ev);
+            h1[2] -> Fill(FM1);
+    }
 
 
 }
