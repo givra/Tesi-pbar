@@ -233,7 +233,7 @@ void UserEvent309(PaEvent& e){
     hced2->Fill(CE2m);
   
     if( !e.IsMC() && (CE1m < 6 || CE2m < 6) ) return;
-    stats->Fill( ind++);
+    stats->Fill( ind++);    // 3
 
     for( int it = 0; it < e.NTrack(); it++){
   

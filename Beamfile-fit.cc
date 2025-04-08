@@ -108,7 +108,7 @@ void Beamfile_fit(){
 
         int Nevent;
 
-static bool first = false; 
+static bool first = true; 
 
 if(first == true){
         // canvases referring to real random-triggered 2023 data
@@ -175,7 +175,7 @@ if(first == true){
         correlation[5] = new TH2D("slopeX-slopeY", "correlation slopeX-slopeY; slopeX [mrad]; slopeY [mrad]", nbin, -1.,1., nbin,-1.,1.);
         correlation[5] -> SetOption("colz");
 
-        GeneratedBivGauss[0] = new TH2D("X-slopeX_bivgauss", "generated X-slopeX; X [cm]; dX/dZ [mrad]", nbin, -2.,2., nbin, -1.,1.);
+        GeneratedBivGauss[0] = new TH2D("X-slopeX_bivgauss", "generated X-slopeX; X [cm]; dX/dZ [mrad]", nbin, -2.5,2.5, nbin, -1.,1.);
         GeneratedBivGauss[0] -> SetOption("colz");
         GeneratedBivGauss[1] = new TH2D("Y-slopeY_bivgauss", "generated Y-slopeY; Y [cm]; dY/dZ [mrad]", nbin, -2.,2., nbin, -1.,1.);
         GeneratedBivGauss[1] -> SetOption("colz");
@@ -242,18 +242,18 @@ if(first) CC->cd(2);
         TF2 *gaus2DX = new TF2("bivgauss_fitX", bivariate_gaussian,-0.9,0.7,-0.15,0.2,6);
 
         gaus2DX->SetParLimits(0, 0, 1000);     // Amplitude
-        gaus2DX->SetParLimits(1, -0.09, -0.078);     // Mean X
-        gaus2DX->SetParLimits(2, 0.02, 0.025);      // Mean Y
-        gaus2DX->SetParLimits(3, 0.4, 0.45);      // Sigma X
-        gaus2DX->SetParLimits(4, 0.08, 0.09);     // Sigma Y
+        gaus2DX->SetParLimits(1, -0.09, -0.05);     // Mean X
+        gaus2DX->SetParLimits(2, 0.02, 0.03);      // Mean Y
+        gaus2DX->SetParLimits(3, 0., 0.5);      // Sigma X
+        gaus2DX->SetParLimits(4, 0.6, 0.09);     // Sigma Y
         gaus2DX->SetParLimits(5, -1, 1);        // correlation coefficient
 
         //gaus2DX->SetParameters(0,500);
-        gaus2DX->SetParameters(1,-0.078);
-        gaus2DX->SetParameters(2,0.023);
-        gaus2DX->SetParameters(3,0.44);
-        gaus2DX->SetParameters(4,0.080);
-        gaus2DX->SetParameters(5,-0.27);
+        gaus2DX->SetParameter(1,-0.078);
+        gaus2DX->SetParameter(2,0.023);
+        gaus2DX->SetParameter(3,0.44);
+        gaus2DX->SetParameter(4,0.080);
+        gaus2DX->SetParameter(5,-0.27);
 
 if(first) correlation[1]->Draw("");
         gPad->SetLogz();
@@ -289,12 +289,12 @@ if(first){
         gaus2DY->SetParLimits(4, 0.06, 0.09);            // Sigma Y
         gaus2DY->SetParLimits(5, -1, 1);              // correlation coefficient
 
-        //gaus2DY->SetParameters(0,563);                  // amplitude
-        gaus2DY->SetParameters(1,-0.12);               // mean x
-        gaus2DY->SetParameters(2,0.040);                // mean y
-        gaus2DY->SetParameters(3,0.33);                 // sigma x
-        gaus2DY->SetParameters(4,0.088);                // sigma y
-        //gaus2DY->SetParameters(5,-0.05);                // correlation coefficient
+        //gaus2DY->SetParameter(0,563);                  // amplitude
+        gaus2DY->SetParameter(1,-0.12);               // mean x
+        gaus2DY->SetParameter(2,0.040);                // mean y
+        gaus2DY->SetParameter(3,0.33);                 // sigma x
+        gaus2DY->SetParameter(4,0.088);                // sigma y
+        //gaus2DY->SetParameter(5,-0.05);                // correlation coefficient
 
 if(first) correlation[4] ->Draw("");
 
@@ -343,7 +343,7 @@ if(first){
         gausGenSlopeY->SetParameter(2, sigmadYdZ);      // sigma
 
         // Bivariate Gaussian Functions
-        TF2 *gausGen2DX = new TF2("bivgaussGen_fitX", bivariate_gaussian,-2.0,2.0,-0.6,0.6,6);
+        TF2 *gausGen2DX = new TF2("bivgaussGen_fitX", bivariate_gaussian,-3.0,3.0,-0.6,0.6,6);
         gausGen2DX->SetParameter(0, par0X);
         gausGen2DX->SetParameter(1, par1X);
         gausGen2DX->SetParameter(2, par2X);
@@ -361,7 +361,7 @@ if(first){
         
         
         // random events generation
-        const int nEvents = 10000000;
+        const int nEvents = 1000000;
     
         for (int i = 0; i < nEvents; ++i) {
 
